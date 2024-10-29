@@ -9,12 +9,15 @@ private:
 	sf::Texture texture;
 
 	//Private Functions
+	void initTexture();
+	void initSprite();
+
 public:
 	Player();
 	virtual ~Player();
 
 	//Functions
 	void update();
-	void render(sf::RenderTarget& targer);
+	void render(sf::RenderTarget& target);
 };
 
