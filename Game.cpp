@@ -20,6 +20,7 @@ void Game::initTextures()
 void Game::initPlayer()
 {
 	this->player = new Player();
+	this->enemy = new Enemy(20.f, 20.f);
 }
 
 //Constructor
@@ -125,9 +126,10 @@ void Game::render()
 
 	for (auto* bullet : this->bullets)
 	{
-		bullet->render(*this->window);
+		bullet->render(this->window);
 	}
 
+	this->enemy->render(this->window);
 	//this function called after OpenGL rendering has been done for the current frame, in orther to show it on screen
 	this->window->display();
 

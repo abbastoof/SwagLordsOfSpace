@@ -24,7 +24,7 @@ public:
 
 	//Functions
 	void update();
-	void render(sf::RenderTarget& target);
+	void render(sf::RenderTarget* target);
 };
 
 #endif
