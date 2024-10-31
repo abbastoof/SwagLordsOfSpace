@@ -20,7 +20,12 @@ void Game::initTextures()
 void Game::initPlayer()
 {
 	this->player = new Player();
-	this->enemy = new Enemy(20.f, 20.f);
+}
+
+void Game::initEnemies()
+{
+	this->spawnTimerMax = 50.f;
+	this->spawnTimer = 0.f;
 }
 
 //Constructor
@@ -29,6 +34,7 @@ Game::Game()
 	this->initWindow();
 	this->initTextures();
 	this->initPlayer();
+	this->initEnemies();
 }
 
 //Destructor
@@ -45,6 +51,10 @@ Game::~Game()
 	//Delete bullets
 	for (auto* i : this->bullets)
 	{
+		delete i;
+	}
+	//Delete enemies
+	for (auto* i : this->enemies) {
 		delete i;
 	}
 }
@@ -83,9 +93,17 @@ void Game::updateInput()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		this->player->move(0.f, 1.f);
 
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->player->canAttack()){
-		this->bullets.push_back(new Bullet(this->textures["BULLET"], this->player->getPos().x, this->player->getPos().y, 0.f, -1.f, 5.f)); // 0.f, -1.f means the bullet will go up, 5.f is the speed of the bullet
+	//if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->player->canAttack()){
+	//	this->bullets.push_back(new Bullet(this->textures["BULLET"], this->player->getPos().x, this->player->getPos().y, 0.f, -1.f, 5.f)); // 0.f, -1.f means the bullet will go up, 5.f is the speed of the bullet
+	//}
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && this->player->canAttack()) {
+		sf::FloatRect playerBounds = this->player->getBounds();
+		float bulletPosX = playerBounds.left + (playerBounds.width / 2); // Center the bullet on player's x-axis
+		float bulletPosY = playerBounds.top; // Place it at the top of the player
+
+		this->bullets.push_back(new Bullet(this->textures["BULLET"], bulletPosX, bulletPosY, 0.f, -1.f, 5.f));
 	}
+
 }
 
 void Game::updateBullets()
@@ -107,12 +125,29 @@ void Game::updateBullets()
 	}
 }
 
+void Game::updateEnemies()
+{
+	this->spawnTimer += 0.5f;
+	if (this->spawnTimer >= this->spawnTimerMax)
+	{
+		this->enemies.push_back(new Enemy(rand() % 200, rand() % 200)); //rand() % 200 means the enemy will spawn in a random position between 0 and 200
+		this->spawnTimer = 0.f;
+	}
+	
+	for (auto* enemy : this->enemies)
+	{
+		enemy->update();
+	}
+
+}
+
 void Game::update()
 {
 	this->updatePollEvents();
 	this->updateInput();
 	this->player->update();
 	this->updateBullets();
+	this->updateEnemies();
 }
 
 void Game::render()
@@ -128,8 +163,12 @@ void Game::render()
 	{
 		bullet->render(this->window);
 	}
+	
+	for (auto* enemy : this->enemies)
+	{
+		enemy->render(this->window);
+	}
 
-	this->enemy->render(this->window);
 	//this function called after OpenGL rendering has been done for the current frame, in orther to show it on screen
 	this->window->display();
 

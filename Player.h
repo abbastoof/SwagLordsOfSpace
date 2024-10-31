@@ -27,6 +27,8 @@ public:
 
 	//Accessors
 	const sf::Vector2f& getPos() const; //Returns the position of the player.
+	const sf::FloatRect getBounds() const;
+
 
 	//Functions
 	void move(const float dirx, const float diry);
