@@ -143,38 +143,53 @@ void Game::updateBullets()
 	}
 }
 
-void Game::updateEnemiesAndCombat()
+void Game::updateEnemies()
 {
+
+	//Spawning enemies
+
 	this->spawnTimer += 0.5f;
 	if (this->spawnTimer >= this->spawnTimerMax)
 	{
 		this->enemies.push_back(new Enemy(rand() % this->window->getSize().x - 20.f, -100.f));
-		this->spawnTimer = 0.f;
+		this->spawnTimer = 0.f; //reset the timer
 	}
 	
-	for (int i = 0; i < this->enemies.size(); ++i)
+	//update
+	unsigned counter = 0;
+	for (auto* enemy : this->enemies)
 	{
-		bool enemy_removed = false;
-		this->enemies[i]->update();
+		enemy->update();
 
-		for (size_t k = 0; k < this->bullets.size() && !enemy_removed; ++k)
+		//Bullet culling (top of screen)
+		//if the top of the enemy is greater than the height of the window, then delete the enemy
+		if (enemy->getBounds().top > this->window->getSize().y)
 		{
-			if (this->bullets[k]->getBounds().intersects(this->enemies[i]->getBounds())) {
-				this->bullets.erase(this->bullets.begin() + k);
-				this->enemies.erase(this->enemies.begin() + i);
-				enemy_removed = true;
-			}
+			delete this->enemies.at(counter); //delete the current enemy from the vector of enemies
+			this->enemies.erase(this->enemies.begin() + counter); //erase the enemy from the vector of enemies
+			--counter; //because we deleted the enemy, we have to decrease the counter
 		}
+		++counter;
+	}
 
-		//Enemy culling (bottom of screen)
-		if (!enemy_removed)
+
+}
+
+void Game::updateCombat()
+{
+	for (int i = 0; i < this->enemies.size(); ++i) //for each enemy
+	{
+		bool enemy_deleted = false;
+		for (size_t k = 0; k < this->bullets.size() && enemy_deleted == false; ++k) //for each bullet
 		{
-			if (this->enemies[i]->getBounds().top > this->window->getSize().y)
+			if (this->enemies[i]->getBounds().intersects(this->bullets[k]->getBounds())) // if the enemy intersects with the bullet
 			{
 				delete this->enemies[i];
 				this->enemies.erase(this->enemies.begin() + i);
-				enemy_removed = true;
 
+				delete this->bullets[k];
+				this->bullets.erase(this->bullets.begin() + k);
+				enemy_deleted = true;
 			}
 		}
 	}
@@ -187,7 +202,8 @@ void Game::update()
 	this->updateInput();
 	this->player->update();
 	this->updateBullets();
-	this->updateEnemiesAndCombat();
+	this->updateEnemies();
+	this->updateCombat();
 	this->updateGUI();
 }
 
