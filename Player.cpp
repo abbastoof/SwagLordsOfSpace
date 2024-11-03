@@ -3,7 +3,7 @@
 
 void Player::initVariables()
 {
-	this->movementSpeed = 1.0f;
+	this->movementSpeed = 2.f;
 	this->attackCooldownMax = 10.f;
 	this->attackCooldown = this->attackCooldownMax; // This means that the player can attack as soon as the game starts.
 }

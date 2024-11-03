@@ -17,6 +17,18 @@ void Game::initTextures()
 	}
 }
 
+void Game::initGui()
+{
+	//Load font
+	if (!this->font.loadFromFile("Fonts/PixellettersFull.ttf"))
+		std::cout << "ERROR::GAME::Failed to load font" << std::endl;
+	//Init point text
+	this->pointText.setFont(this->font);
+	this->pointText.setCharacterSize(12);
+	this->pointText.setFillColor(sf::Color::White);
+	this->pointText.setString("Test");
+}
+
 void Game::initPlayer()
 {
 	this->player = new Player();
@@ -33,6 +45,7 @@ Game::Game()
 {
 	this->initWindow();
 	this->initTextures();
+	this->initGui();
 	this->initPlayer();
 	this->initEnemies();
 }
@@ -106,6 +119,11 @@ void Game::updateInput()
 
 }
 
+void Game::updateGUI()
+{
+
+}
+
 void Game::updateBullets()
 {
 	unsigned counter = 0;
@@ -125,24 +143,39 @@ void Game::updateBullets()
 	}
 }
 
-void Game::updateEnemies()
+void Game::updateEnemiesAndCombat()
 {
 	this->spawnTimer += 0.5f;
 	if (this->spawnTimer >= this->spawnTimerMax)
 	{
-		this->enemies.push_back(new Enemy(rand() % this->window->getSize().x-20.f, -100.f)); //rand() % 200 means the enemy will spawn in a random position between 0 and 200
+		this->enemies.push_back(new Enemy(rand() % this->window->getSize().x - 20.f, -100.f));
 		this->spawnTimer = 0.f;
 	}
 	
-	for (int i = 0; i < this->enemies.size(); i++)
+	for (int i = 0; i < this->enemies.size(); ++i)
 	{
+		bool enemy_removed = false;
 		this->enemies[i]->update();
 
-		//Enemy culling (bottom of screen)
-		if (this->enemies[i]->getBounds().top > this->window->getSize().y)
+		for (size_t k = 0; k < this->bullets.size() && !enemy_removed; ++k)
 		{
-			delete this->enemies[i];
-			this->enemies.erase(this->enemies.begin() + i);
+			if (this->bullets[k]->getBounds().intersects(this->enemies[i]->getBounds())) {
+				this->bullets.erase(this->bullets.begin() + k);
+				this->enemies.erase(this->enemies.begin() + i);
+				enemy_removed = true;
+			}
+		}
+
+		//Enemy culling (bottom of screen)
+		if (!enemy_removed)
+		{
+			if (this->enemies[i]->getBounds().top > this->window->getSize().y)
+			{
+				delete this->enemies[i];
+				this->enemies.erase(this->enemies.begin() + i);
+				enemy_removed = true;
+
+			}
 		}
 	}
 
@@ -154,7 +187,13 @@ void Game::update()
 	this->updateInput();
 	this->player->update();
 	this->updateBullets();
-	this->updateEnemies();
+	this->updateEnemiesAndCombat();
+	this->updateGUI();
+}
+
+void Game::renderGUI()
+{
+	this->window->draw(this->pointText);
 }
 
 void Game::render()
@@ -175,6 +214,8 @@ void Game::render()
 	{
 		enemy->render(this->window);
 	}
+
+	this->renderGUI();
 
 	//this function called after OpenGL rendering has been done for the current frame, in orther to show it on screen
 	this->window->display();

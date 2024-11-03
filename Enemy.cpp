@@ -10,12 +10,12 @@ void Enemy::initShape()
 
 void Enemy::initVariables()
 {
-    this->type = 0;
-    this->hpMax = 10;
-    this->hp = 0;
-    this->damage = 1;
-    this->points = 5;
-	this->speed = static_cast<float>(rand() % 2 + 1);
+    this->type      = 0;
+    this->hpMax     = 10;
+    this->hp        = 0;
+    this->damage    = 1;
+    this->points    = 5;
+	this->speed     = static_cast<float>(rand() % 2 + 1);
 }
 
 Enemy::Enemy(float pos_x, float pos_y)
