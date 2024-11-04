@@ -16,6 +16,9 @@ private:
 	float attackCooldown;
 	float attackCooldownMax;
 
+	int hp;
+	int hpMax;
+
 	//Private Functions
 	void initVariables();
 	void initTexture();
@@ -27,12 +30,16 @@ public:
 
 	//Accessors
 	const sf::Vector2f& getPos() const; //Returns the position of the player.
-	const sf::FloatRect getBounds() const;
+	const sf::FloatRect getBounds() const; //Returns the bounds of the player.
+	const int& getHp() const; //Returns the health points of the player.
+	const int& getHpMax() const; //Returns the maximum health points of the player.
 
 
 	//Modifiers
 	void setPosition(const sf::Vector2f pos);
 	void setPosition(const float x, const float y);
+	void setHp(const int hp); //Sets the health points of the player.
+	void loseHp(const int value); //Loses health points.
 
 	//Functions
 	void move(const float dirx, const float diry);

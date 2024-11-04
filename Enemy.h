@@ -27,6 +27,7 @@ public:
 	//Accessors
 	const sf::FloatRect getBounds() const; //Returns the bounds of the enemy
 	const int& getPoints() const; //Returns the points given to the player when killed
+	const int& getDamage() const;
 	//Functions
 	void update(); //Updates the enemy
 	void render(sf::RenderTarget* target); //Renders the enemy

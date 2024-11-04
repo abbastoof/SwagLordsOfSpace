@@ -34,6 +34,12 @@ private:
 	//Player
 	Player* player;
 
+	//Player GUI
+	sf::RectangleShape playerHpBar; //Health bar
+	sf::RectangleShape playerHpBarBackground; //Background of the health bar
+
+	sf::Text gameOverText;
+
 	//Enemies
 	float spawnTimer;
 	float spawnTimerMax;

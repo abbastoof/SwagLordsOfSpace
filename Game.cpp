@@ -23,10 +23,26 @@ void Game::initGui()
 	if (!this->font.loadFromFile("Fonts/PixellettersFull.ttf"))
 		std::cout << "ERROR::GAME::Failed to load font" << std::endl;
 	//Init point text
+	this->pointText.setPosition(700.f, 25.f);
 	this->pointText.setFont(this->font);
-	this->pointText.setCharacterSize(22);
+	this->pointText.setCharacterSize(20);
 	this->pointText.setFillColor(sf::Color::White);
 	this->pointText.setString("Test");
+
+	this->gameOverText.setFont(this->font);
+	this->gameOverText.setCharacterSize(60);
+	this->gameOverText.setFillColor(sf::Color::Red);
+	this->gameOverText.setString("Game Over!");
+	this->gameOverText.setPosition(
+		this->window->getSize().x / 2.f - this->gameOverText.getGlobalBounds().width / 2.f,
+		this->window->getSize().y / 2.f - this->gameOverText.getGlobalBounds().height / 2.f);
+
+	//Init player GUI
+	this->playerHpBar.setSize(sf::Vector2f(300.f, 25.f));
+	this->playerHpBar.setFillColor(sf::Color::Red);
+	this->playerHpBar.setPosition(sf::Vector2f(20.f, 20.f));
+	this->playerHpBarBackground = this->playerHpBar;
+	this->playerHpBarBackground.setFillColor(sf::Color(25, 25, 25, 200));
 }
 
 void Game::initWorldBackground()
@@ -95,7 +111,9 @@ void Game::run()
 {
 	while (this->window->isOpen())
 	{
-		this->update();
+		this->updatePollEvents();
+		if (this->player->getHp() > 0)
+			this->update();
 		this->render();
 	}
 }
@@ -140,6 +158,10 @@ void Game::updateGUI()
 	std::stringstream ss;
 	ss << "Points: " << this->points;
 	this->pointText.setString(ss.str());
+
+	//Update player GUI
+	float hpPercent = static_cast<float>(this->player->getHp()) / this->player->getHpMax();
+	this->playerHpBar.setSize(sf::Vector2f(300.f * hpPercent, this->playerHpBar.getSize().y));
 }
 
 void Game::updateWorldBackground()
@@ -175,7 +197,6 @@ void Game::updateBullets()
 			// delete the bullet
 			delete this->bullets.at(counter); //delete the current bullet from the vector of bullets
 			this->bullets.erase(this->bullets.begin() + counter); //erase the bullet from the vector of bullets
-			--counter; //because we deleted the bullet, we have to decrease the counter
 		}
 		++counter;
 	}
@@ -205,13 +226,13 @@ void Game::updateEnemies()
 		{
 			delete this->enemies.at(counter); //delete the current enemy from the vector of enemies
 			this->enemies.erase(this->enemies.begin() + counter); //erase the enemy from the vector of enemies
-			--counter; //because we deleted the enemy, we have to decrease the counter
 		}
+		//Enemy player collision
 		else if (enemy->getBounds().intersects(this->player->getBounds())) //if the enemy intersects with the player
 		{
+			this->player->loseHp(this->enemies.at(counter)->getDamage());
 			delete this->enemies.at(counter); //delete the current enemy from the vector of enemies
 			this->enemies.erase(this->enemies.begin() + counter); //erase the enemy from the vector of enemies
-			--counter; //because we deleted the enemy, we have to decrease the counter
 		}
 		++counter;
 	}
@@ -243,7 +264,6 @@ void Game::updateCombat()
 
 void Game::update()
 {
-	this->updatePollEvents();
 	this->updateInput();
 	this->player->update();
 	this->updateCollision();
@@ -257,6 +277,8 @@ void Game::update()
 void Game::renderGUI()
 {
 	this->window->draw(this->pointText);
+	this->window->draw(this->playerHpBarBackground);
+	this->window->draw(this->playerHpBar);
 }
 
 void Game::renderWorldBackground()
@@ -287,6 +309,12 @@ void Game::render()
 	}
 
 	this->renderGUI();
+
+	//Game over screen
+	if (this->player->getHp() <= 0)
+	{
+		this->window->draw(this->gameOverText);
+	}
 
 	//this function called after OpenGL rendering has been done for the current frame, in orther to show it on screen
 	this->window->display();
