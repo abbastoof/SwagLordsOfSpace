@@ -172,6 +172,7 @@ void Game::updateBullets()
 		// if top of the bullet plus the height of the bullet(means the bottom of the bullet) is less than 0(which means the bullet is out of the screen) then delete the bullet
 		if (bullet->getBounds().top + bullet->getBounds().height < 0.f)
 		{
+			// delete the bullet
 			delete this->bullets.at(counter); //delete the current bullet from the vector of bullets
 			this->bullets.erase(this->bullets.begin() + counter); //erase the bullet from the vector of bullets
 			--counter; //because we deleted the bullet, we have to decrease the counter
@@ -206,6 +207,12 @@ void Game::updateEnemies()
 			this->enemies.erase(this->enemies.begin() + counter); //erase the enemy from the vector of enemies
 			--counter; //because we deleted the enemy, we have to decrease the counter
 		}
+		else if (enemy->getBounds().intersects(this->player->getBounds())) //if the enemy intersects with the player
+		{
+			delete this->enemies.at(counter); //delete the current enemy from the vector of enemies
+			this->enemies.erase(this->enemies.begin() + counter); //erase the enemy from the vector of enemies
+			--counter; //because we deleted the enemy, we have to decrease the counter
+		}
 		++counter;
 	}
 
@@ -221,6 +228,7 @@ void Game::updateCombat()
 		{
 			if (this->enemies[i]->getBounds().intersects(this->bullets[k]->getBounds())) // if the enemy intersects with the bullet
 			{
+				this->points += this->enemies[i]->getPoints(); //add the points of the enemy to the player's points
 				delete this->enemies[i];
 				this->enemies.erase(this->enemies.begin() + i);
 
