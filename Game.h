@@ -22,6 +22,11 @@ private:
 	sf::Font	font;
 	sf::Text	pointText;
 	
+
+	//World
+	sf::Texture worldBackgroundTexture;
+	sf::Sprite worldBackground; //Sprite is a class that inherits from drawable, so it can be drawn to the window
+
 	//Player
 	Player* player;
 
@@ -35,7 +40,7 @@ private:
 	void initWindow();
 	void initTextures();
 	void initGui();
-
+	void initWorldBackground();
 	void initPlayer();
 	void initEnemies();
 
@@ -50,11 +55,14 @@ public:
 	void updatePollEvents();
 	void updateInput(); //Keyboard input for player
 	void updateGUI();
+	void updateWorldBackground();
+	void updateCollision();
 	void updateBullets();
 	void updateEnemies();
 	void updateCombat();
 	void update();
 	void renderGUI();
+	void renderWorldBackground();
 	void render();
 };
 

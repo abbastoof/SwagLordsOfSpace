@@ -30,6 +30,10 @@ public:
 	const sf::FloatRect getBounds() const;
 
 
+	//Modifiers
+	void setPosition(const sf::Vector2f pos);
+	void setPosition(const float x, const float y);
+
 	//Functions
 	void move(const float dirx, const float diry);
 	const bool canAttack();
