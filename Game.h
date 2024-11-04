@@ -2,7 +2,8 @@
 #define GAME_H
 
 #include <map>
-
+#include <string>
+#include <sstream>
 #include "Player.h"
 #include "Bullet.h"
 #include "Enemy.h"
@@ -27,6 +28,9 @@ private:
 	sf::Texture worldBackgroundTexture;
 	sf::Sprite worldBackground; //Sprite is a class that inherits from drawable, so it can be drawn to the window
 
+	//Systems
+	unsigned points;
+	
 	//Player
 	Player* player;
 
@@ -41,6 +45,7 @@ private:
 	void initTextures();
 	void initGui();
 	void initWorldBackground();
+	void initSystems();
 	void initPlayer();
 	void initEnemies();
 

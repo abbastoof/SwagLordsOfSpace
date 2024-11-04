@@ -24,7 +24,7 @@ void Game::initGui()
 		std::cout << "ERROR::GAME::Failed to load font" << std::endl;
 	//Init point text
 	this->pointText.setFont(this->font);
-	this->pointText.setCharacterSize(12);
+	this->pointText.setCharacterSize(22);
 	this->pointText.setFillColor(sf::Color::White);
 	this->pointText.setString("Test");
 }
@@ -38,6 +38,11 @@ void Game::initWorldBackground()
 	this->worldBackground.setTexture(this->worldBackgroundTexture);
 	//Fill the screen with the background
 	this->worldBackground.setScale(0.2f, 0.2f);
+}
+
+void Game::initSystems()
+{
+	this->points = 0;
 }
 
 void Game::initPlayer()
@@ -55,9 +60,10 @@ void Game::initEnemies()
 Game::Game()
 {
 	this->initWindow();
-	this->initWorldBackground();
 	this->initTextures();
 	this->initGui();
+	this->initWorldBackground();
+	this->initSystems();
 	this->initPlayer();
 	this->initEnemies();
 }
@@ -131,11 +137,14 @@ void Game::updateInput()
 
 void Game::updateGUI()
 {
-
+	std::stringstream ss;
+	ss << "Points: " << this->points;
+	this->pointText.setString(ss.str());
 }
 
 void Game::updateWorldBackground()
 {
+
 }
 
 void Game::updateCollision()
