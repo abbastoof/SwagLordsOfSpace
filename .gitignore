@@ -369,6 +369,7 @@ FodyWeavers.xsd
 # Ignore build folders
 Debug/
 Release/
+build/
 
 # Ignore Visual Studio files
 *.obj
